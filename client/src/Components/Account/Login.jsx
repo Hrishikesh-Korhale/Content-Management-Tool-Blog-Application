@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { Box, Button, TextField, Typography } from "@mui/material";
+import { useState } from "react";
 
 const Component = styled(Box)`
   width: 400px;
@@ -52,17 +53,37 @@ const Login = () => {
   const imageURL =
     "https://www.sesta.it/wp-content/uploads/2021/03/logo-blog-sesta-trasparente.png";
 
+  const [Account, toggleAccount] = useState("login");
+
+  const toggleSignup = () => {
+    Account === "login" ? toggleAccount("signup") : toggleAccount("login");
+  };
   return (
     <Component>
       <Box>
         <Image src={imageURL} alt="logoimg" />
-        <Wrapper>
-          <TextField variant="standard" label="Enter username" />
-          <TextField variant="standard" label="Enter password" />
-          <LoginButton variant="contained">Login</LoginButton>
-          <Text>OR</Text>
-          <SignupButton>Create an Account</SignupButton>
-        </Wrapper>
+        {Account === "login" ? (
+          <Wrapper>
+            <TextField variant="standard" label="Enter username" />
+            <TextField variant="standard" label="Enter password" />
+            <LoginButton variant="contained">Login</LoginButton>
+            <Text>OR</Text>
+            <SignupButton onClick={() => toggleSignup()}>
+              Create an Account
+            </SignupButton>
+          </Wrapper>
+        ) : (
+          <Wrapper>
+            <TextField variant="standard" label="Enter Name" />
+            <TextField variant="standard" label="Enter Username" />
+            <TextField variant="standard" label="Enter Password" />
+            <SignupButton variant="contained">Signup</SignupButton>
+            <Text>OR</Text>
+            <LoginButton onClick={() => toggleSignup()}>
+              Already have an Account
+            </LoginButton>
+          </Wrapper>
+        )}
       </Box>
     </Component>
   );
