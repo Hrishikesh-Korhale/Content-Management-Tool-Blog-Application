@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
+import { API } from "../service/api";
 
 const Component = styled(Box)`
   width: 400px;
@@ -49,15 +50,53 @@ const Text = styled(Typography)`
   font-size: 16px;
 `;
 
+const StyledErrorText = styled(Typography)`
+  color: #ff6161;
+  font-size: 10px;
+  line-height: 0;
+  margin-top: 10px;
+  font-weight: 600;
+`;
+
 const Login = () => {
   const imageURL =
     "https://www.sesta.it/wp-content/uploads/2021/03/logo-blog-sesta-trasparente.png";
 
+  const signupIntialValue = {
+    name: "",
+    username: "",
+    password: "",
+  };
+
   const [Account, toggleAccount] = useState("login");
+  const [signup, setSignup] = useState(signupIntialValue);
+  const [error, setError] = useState("");
 
   const toggleSignup = () => {
     Account === "login" ? toggleAccount("signup") : toggleAccount("login");
   };
+  const onInputChange = (e) => {
+    setSignup({ ...signup, [e.target.name]: e.target.value });
+    console.log(signup);
+  };
+
+  const signupUser = async () => {
+    try {
+      let response = await API.userSignup(signup);
+      if (response.isSuccess) {
+        setError("");
+        setSignup(signupIntialValue);
+        toggleAccount("login");
+      } else {
+        console.error("Error Response:", response);
+        setError("Something went wrong! Please try again later");
+      }
+    } catch (error) {
+      console.error("Caught Error:", error);
+      setError("An error occurred while signing up. Please try again later.");
+    }
+  };
+
   return (
     <Component>
       <Box>
@@ -66,6 +105,8 @@ const Login = () => {
           <Wrapper>
             <TextField variant="standard" label="Enter username" />
             <TextField variant="standard" label="Enter password" />
+
+            {error && <StyledErrorText>{error}</StyledErrorText>}
             <LoginButton variant="contained">Login</LoginButton>
             <Text>OR</Text>
             <SignupButton onClick={() => toggleSignup()}>
@@ -74,10 +115,28 @@ const Login = () => {
           </Wrapper>
         ) : (
           <Wrapper>
-            <TextField variant="standard" label="Enter Name" />
-            <TextField variant="standard" label="Enter Username" />
-            <TextField variant="standard" label="Enter Password" />
-            <SignupButton variant="contained">Signup</SignupButton>
+            <TextField
+              variant="standard"
+              onChange={(e) => onInputChange(e)}
+              name="name"
+              label="Enter Name"
+            />
+            <TextField
+              variant="standard"
+              onChange={(e) => onInputChange(e)}
+              name="username"
+              label="Enter Username"
+            />
+            <TextField
+              variant="standard"
+              onChange={(e) => onInputChange(e)}
+              name="password"
+              label="Enter Password"
+            />
+            {error && <StyledErrorText>{error}</StyledErrorText>}
+            <SignupButton variant="contained" onClick={() => signupUser()}>
+              Signup
+            </SignupButton>
             <Text>OR</Text>
             <LoginButton onClick={() => toggleSignup()}>
               Already have an Account
